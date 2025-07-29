@@ -1,0 +1,48 @@
+front_left_shoulder:
+  min: 0
+  mid: 90
+  max: 180
+front_right_shoulder:
+  min: 0
+  mid: 90
+  max: 180
+back_left_shoulder:
+  min: 0
+  mid: 90
+  max: 180
+back_right_shoulder:
+  min: 0
+  mid: 90
+  max: 180
+front_left_hip:
+  min: 0
+  mid: 90
+  max: 180
+front_right_hip:
+  min: 0
+  mid: 90
+  max: 180
+back_left_hip:
+  min: 0
+  mid: 90
+  max: 180
+back_right_hip:
+  min: 0
+  mid: 90
+  max: 180
+front_left_knee:
+  min: 0
+  mid: 90
+  max: 180
+front_right_knee:
+  min: 0
+  mid: 90
+  max: 180
+back_left_knee:
+  min: 0
+  mid: 90
+  max: 180
+back_right_knee:
+  min: 0
+  mid: 90
+  max: 180
