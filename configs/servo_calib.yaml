@@ -1,48 +1,48 @@
-front_left_shoulder:
-  min: 0
-  mid: 90
-  max: 180
-front_right_shoulder:
-  min: 0
-  mid: 90
-  max: 180
-back_left_shoulder:
-  min: 0
-  mid: 90
-  max: 180
-back_right_shoulder:
-  min: 0
-  mid: 90
-  max: 180
-front_left_hip:
-  min: 0
-  mid: 90
-  max: 180
-front_right_hip:
-  min: 0
-  mid: 90
-  max: 180
 back_left_hip:
-  min: 0
+  max: 125
   mid: 90
-  max: 180
-back_right_hip:
-  min: 0
-  mid: 90
-  max: 180
-front_left_knee:
-  min: 0
-  mid: 90
-  max: 180
-front_right_knee:
-  min: 0
-  mid: 90
-  max: 180
+  min: 50
 back_left_knee:
-  min: 0
+  max: 130
   mid: 90
-  max: 180
+  min: 30
+back_left_shoulder:
+  max: 110
+  mid: 85
+  min: 80
+back_right_hip:
+  max: 130
+  mid: 90
+  min: 55
 back_right_knee:
-  min: 0
+  max: 150
   mid: 90
-  max: 180
+  min: 50
+back_right_shoulder:
+  max: 100
+  mid: 85
+  min: 60
+front_left_hip:
+  max: 125
+  mid: 90
+  min: 55
+front_left_knee:
+  max: 120
+  mid: 90
+  min: 20
+front_left_shoulder:
+  max: 100
+  mid: 90
+  min: 65
+front_right_hip:
+  max: 125
+  mid: 90
+  min: 55
+front_right_knee:
+  max: 160
+  mid: 90
+  min: 60
+front_right_shoulder:
+  max: 115
+  mid: 90
+  min: 75
