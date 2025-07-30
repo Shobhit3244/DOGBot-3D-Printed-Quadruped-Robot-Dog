@@ -1,0 +1,36 @@
+front_left_shoulder:
+  stand: 80
+  offset: 180
+front_right_shoulder:
+  stand: 100
+  offset: 0
+back_left_shoulder:
+  stand: 100
+  offset: 0
+back_right_shoulder:
+  stand: 80
+  offset: 180
+front_left_hip:
+  stand: 90
+  offset: 180
+front_right_hip: 
+  stand: 90
+  offset: 0
+back_left_hip:
+  stand: 110
+  offset: 180
+back_right_hip:
+  stand: 70
+  offset: 0
+front_left_knee: 
+  stand: 90
+  offset: 180
+front_right_knee:
+  stand: 90
+  offset: 0
+back_left_knee:
+  stand: 100
+  offset: 180
+back_right_knee:
+  stand: 80
+  offset: 0
