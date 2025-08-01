@@ -1,3 +1,5 @@
+# Updated Main.py - Trot Gait Controller with User Modifications
+
 import time
 import os
 import sys
@@ -8,7 +10,7 @@ sys.path += [os.path.join(script_dir, p) for p in ('servo_control', 'ik', 'gait'
 
 from servo_control.servo_control import ServoController
 from ik.ik import LegIK
-from gait.gait import TrotBoxGait
+from gait.gait import TrotBoxGaitOverlap
 
 # Config files
 def config(name): return os.path.join(script_dir, '..', 'configs', name)
@@ -47,23 +49,39 @@ def apply_servo_offsets(leg_num, joint_type, angle):
     - Shoulders: No additional offset (already at stand angles)
     """
     if joint_type == 'hip':
-        return angle + 30        # All hips +30°
+        if leg_num == 0:
+            return angle + 45 + 15
+        elif leg_num == 1:
+            return angle + 45 + 19
+        elif leg_num == 2:
+            return angle + 45 + 3.4
+        elif leg_num == 3:
+            return angle + 6.4
+            
     elif joint_type == 'knee':
-        if leg_num in [0, 1]:    # Front legs
-            return angle + 4     # Front knees +4°
-        else:                    # Back legs (2, 3)
-            return angle + 18    # Back knees +18°
+        if leg_num == 0:
+            return angle + 6.8
+        elif leg_num == 1:
+            return angle + 3.5
+        elif leg_num == 2:
+            return angle + 24.4
+        elif leg_num == 3:
+            return angle + 19.3
     else:  # shoulder
         return angle             # No additional offset for shoulders
 
-def set_shoulders_to_stand():
+def set_shoulders_to_stand(a=0):
     """Set all shoulders to their stand positions and keep them there"""
     print("Setting shoulders to stand positions (FIXED)...")
     for leg_num in range(4):
         shoulder_joint = joint_map[leg_num][0]
-        stand_angle = offsets[shoulder_joint]['stand']
-        servo.set_servo_absolute_no_offset(shoulder_joint, stand_angle)
-        print(f"  {shoulder_joint}: {stand_angle}°")
+        if a == 0:
+            stand_angle = offsets[shoulder_joint]['stand']
+            servo.set_servo_absolute_no_offset(shoulder_joint, stand_angle)
+            print(f"  {shoulder_joint}: {stand_angle}°")
+        else:
+            servo.set_servo_absolute_no_offset(shoulder_joint, 90)
+            print(f"  {shoulder_joint}: 90°")
 
 # Move to stand position on start
 print("=" * 60)
@@ -85,18 +103,23 @@ ik.compute_home_from_offsets(offsets, joint_map)
 home_positions = ik.home_xyz
 
 # Instantiate trot gait planner with home positions (2D movement)
-gait = TrotBoxGait(home_positions, step_length=4.0, lift_height=4.0)
+gait = TrotBoxGaitOverlap(home_positions, step_length=1, lift_height=6)
 
 # Initialize current joint angles dictionary (start at stand)
 current_angles = {jn: offsets[jn]['stand'] for leg_num in joint_map for jn in joint_map[leg_num]}
 
-interp_speed = 50  # interpolation steps per second
+interp_speed = 100  # interpolation steps per second
 
-def move_legs_to_positions(phase_positions):
+def move_legs_to_positions(phase_positions, debug=False):
     """
     Move legs to target positions with 2-DOF IK and servo offsets applied
     phase_positions: {leg_num: (x, y)}
+    debug: Enable debug output and pause
     """
+    if debug:
+        print(f"phase_positions: {phase_positions}")
+        input("Press Enter to continue...")
+    
     target_angles = {}
     
     for leg_num, (x, y) in phase_positions.items():
@@ -127,23 +150,25 @@ def move_legs_to_positions(phase_positions):
         servo.move_servos_interpolated(target_angles, currents, steps_per_second=interp_speed)
         current_angles.update(target_angles)
 
-def execute_trot_sequence(sequence):
-    """Execute a full trot sequence (8 phases)"""
+def execute_trot_sequence(sequence, debug=False):
+    """Execute a full trot sequence (6 phases for overlapping trot)"""
     for phase_num, phase_positions in enumerate(sequence):
-        print(f"  Phase {phase_num + 1}/8: Moving legs...")
-        move_legs_to_positions(phase_positions)
-        time.sleep(0.8)  # 0.8 seconds per phase
+        print(f"  Phase {phase_num + 1}/{len(sequence)}: Moving legs...")
+        move_legs_to_positions(phase_positions, debug)
+        #time.sleep(0.2)  # 0.8 seconds per phas
 
-def single_trot_step(direction='forward'):
+def single_trot_step(direction='forward', debug=False):
     """Execute one complete trot step cycle"""
     print(f"Executing single trot step {direction}...")
+    set_shoulders_to_stand(1)  # Ensure shoulders stay fixed during walking
     sequence = gait.get_step_sequence(direction)
-    execute_trot_sequence(sequence)
+    execute_trot_sequence(sequence, debug)
     print(f"Trot step {direction} completed!")
 
 def continuous_trot(direction='forward'):
     """Continuous trot walking until interrupted"""
     print(f"Starting continuous trot {direction}. Press Ctrl+C to stop...")
+    set_shoulders_to_stand(1)  # Ensure shoulders stay fixed during walking
     step_count = 0
     
     try:
@@ -152,7 +177,6 @@ def continuous_trot(direction='forward'):
             print(f"\nTrot Step {step_count} ({direction})")
             sequence = gait.get_step_sequence(direction)
             execute_trot_sequence(sequence)
-            time.sleep(0.1)  # Brief pause between steps
             
     except KeyboardInterrupt:
         print(f"\nContinuous trot stopped after {step_count} steps.")
@@ -177,7 +201,7 @@ def main():
         print("=" * 60)
         print("🔒 SHOULDERS: Fixed at stand angles (NEVER move during walking)")
         print("🚶 TROT GAIT: Only diagonal pairs swing (FL+BR, then FR+BL)")
-        print("📦 BOX STEP: lift 2cm → advance 2cm → lower 2cm → return 2cm")
+        print("📦 BOX STEP: lift 3.5cm → advance 3.5cm → lower 3.5cm → return 3.5cm")
         print("⚙️ OFFSETS: Hips +30°, Front knees +4°, Back knees +18°")
         print()
         print("1. Single trot step forward")
@@ -185,6 +209,8 @@ def main():
         print("3. Continuous trot forward")
         print("4. Continuous trot backward")
         print("5. Stand position")
+        print("6. Single trot step forward (DEBUG)")
+        print("7. Single trot step backward (DEBUG)")
         print("s. Set shoulders to stand position")
         print("q. Quit")
 
@@ -208,6 +234,12 @@ def main():
         elif choice == '5':
             return_to_stand()
             
+        elif choice == '6':
+            single_trot_step('forward', debug=True)
+            
+        elif choice == '7':
+            single_trot_step('backward', debug=True)
+            
         elif choice == 's':
             set_shoulders_to_stand()
             
@@ -217,7 +249,7 @@ def main():
             running = False
             
         else:
-            print("Invalid choice. Please enter 1-5, s, or q.")
+            print("Invalid choice. Please enter 1-7, s, or q.")
 
 if __name__ == "__main__":
     main()
