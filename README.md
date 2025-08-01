@@ -74,7 +74,9 @@ dogbot_ws/
 ├── configs
 │   ├── limb_lengths.yaml      # Robot limb segment lengths (cm)
 │   ├── servo_calib.yaml       # Servo min, mid, max calibration (degrees)
-│   └── servo_map.yaml         # PCA9685 channel ↔ joint names mapping
+│   ├── servo_map.yaml         # PCA9685 channel ↔ joint names mapping
+│   └── servo_offset.yaml      # Each Servo's offset correction value and angles at stand position
+|
 └── src
     ├── gait
     │   ├── gait.py            # Gait pattern generator
